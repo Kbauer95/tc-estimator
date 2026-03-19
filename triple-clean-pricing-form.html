@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Triple Clean — Pricing Form</title>
+<style>
+  :root {
+    --cyan: #00d4d4;
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --surface2: #1c1c1c;
+    --border: rgba(255,255,255,0.08);
+    --text: #f0f0f0;
+    --muted: #888;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+  body { max-width: 480px; margin: 0 auto; padding-bottom: 120px; }
+
+  .header {
+    padding: 20px 20px 14px;
+    padding-top: max(20px, env(safe-area-inset-top));
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    position: sticky; top: 0; z-index: 10;
+  }
+  .header-title { font-size: 17px; font-weight: 700; }
+  .header-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+  .intro { padding: 16px 20px; font-size: 14px; color: var(--muted); line-height: 1.5; border-bottom: 1px solid var(--border); }
+  .intro strong { color: var(--text); }
+
+  .section { padding: 0 20px; margin-top: 24px; }
+  .section-header {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--cyan);
+    margin-bottom: 12px; padding-bottom: 6px;
+    border-bottom: 1px solid rgba(0,212,212,0.2);
+  }
+
+  .field { margin-bottom: 14px; }
+  .field label { font-size: 13px; color: var(--muted); display: block; margin-bottom: 6px; }
+  .field input, .field textarea {
+    width: 100%; background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 12px 14px;
+    color: var(--text); font-size: 16px; font-family: inherit; outline: none;
+    -webkit-appearance: none;
+  }
+  .field input:focus, .field textarea:focus { border-color: var(--cyan); }
+  .field textarea { resize: vertical; min-height: 70px; }
+  .field .hint { font-size: 11px; color: var(--muted); margin-top: 4px; font-style: italic; }
+
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+
+  .bottom-bar {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 480px;
+    background: var(--surface); border-top: 1px solid var(--border);
+    padding: 14px 20px;
+    padding-bottom: max(14px, env(safe-area-inset-bottom));
+  }
+  .btn {
+    width: 100%; padding: 15px; border-radius: var(--radius-sm);
+    font-size: 15px; font-weight: 600; font-family: inherit;
+    cursor: pointer; border: none; background: var(--cyan); color: #000;
+  }
+  .btn:active { opacity: 0.85; transform: scale(0.98); }
+
+  .toast {
+    position: fixed; top: 80px; left: 50%; transform: translateX(-50%) translateY(-20px);
+    background: var(--cyan); color: #000; font-weight: 600; font-size: 13px;
+    padding: 10px 20px; border-radius: 20px; opacity: 0; transition: all 0.25s; z-index: 100;
+    pointer-events: none; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .divider { height: 1px; background: var(--border); margin: 8px 0 20px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">Triple Clean Pricing Form</div>
+</div>
+
+<!-- HOUSE WASH -->
+<div class="section">
+  <div class="section-header">House Wash</div>
+  <div class="field-row">
+    <div class="field">
+      <label>Base rate (per sq ft)</label>
+      <input type="number" inputmode="decimal" step="0.01" id="house_rate" placeholder="0.20">
+    </div>
+    <div class="field">
+      <label>Minimum job</label>
+      <input type="number" inputmode="numeric" id="house_min" placeholder="175">
+    </div>
+  </div>
+  <div class="field-row">
+    <div class="field">
+      <label>2-story upcharge</label>
+      <input type="number" inputmode="numeric" id="house_2story" placeholder="100">
+    </div>
+    <div class="field">
+      <label>Heavy mold/algae</label>
+      <input type="number" inputmode="numeric" id="house_mold" placeholder="75">
+    </div>
+  </div>
+  <div class="field-row">
+    <div class="field">
+      <label>Window cleaning</label>
+      <input type="number" inputmode="numeric" id="house_windows" placeholder="100">
+    </div>
+    <div class="field">
+      <label>Gutter flush add-on</label>
+      <input type="number" inputmode="numeric" id="house_gutters" placeholder="75">
+    </div>
+  </div>
+</div>
+
+<!-- DRIVEWAY -->
+<div class="section">
+  <div class="section-header">Driveway / Concrete</div>
+  <div class="field-row">
+    <div class="field">
+      <label>Base rate (per sq ft)</label>
+      <input type="number" inputmode="decimal" step="0.01" id="drive_rate" placeholder="0.18">
+    </div>
+    <div class="field">
+      <label>Minimum job</label>
+      <input type="number" inputmode="numeric" id="drive_min" placeholder="100">
+    </div>
+  </div>
+  <div class="field-row">
+    <div class="field">
+      <label>Oil stain treatment</label>
+      <input type="number" inputmode="numeric" id="drive_oil" placeholder="75">
+    </div>
+    <div class="field">
+      <label>Sidewalk add-on</label>
+      <input type="number" inputmode="numeric" id="drive_sidewalk" placeholder="60">
+    </div>
+  </div>
+</div>
+
+<!-- DECK -->
+<div class="section">
+  <div class="section-header">Deck / Patio</div>
+  <div class="field-row">
+    <div class="field">
+      <label>Base rate (per sq ft)</label>
+      <input type="number" inputmode="decimal" step="0.01" id="deck_rate" placeholder="0.35">
+    </div>
+    <div class="field">
+      <label>Minimum job</label>
+      <input type="number" inputmode="numeric" id="deck_min" placeholder="125">
+    </div>
+  </div>
+  <div class="field-row">
+    <div class="field">
+      <label>Steps/stairs</label>
+      <input type="number" inputmode="numeric" id="deck_steps" placeholder="55">
+    </div>
+    <div class="field">
+      <label>Stain/seal prep</label>
+      <input type="number" inputmode="numeric" id="deck_stain" placeholder="85">
+    </div>
+  </div>
+</div>
+
+<!-- FENCE -->
+<div class="section">
+  <div class="section-header">Fence</div>
+  <div class="field-row">
+    <div class="field">
+      <label>Base rate (per lin ft)</label>
+      <input type="number" inputmode="decimal" step="0.25" id="fence_rate" placeholder="2.00">
+    </div>
+    <div class="field">
+      <label>Minimum job</label>
+      <input type="number" inputmode="numeric" id="fence_min" placeholder="100">
+    </div>
+  </div>
+  <div class="field-row">
+    <div class="field">
+      <label>Both sides upcharge</label>
+      <input type="number" inputmode="numeric" id="fence_both" placeholder="90">
+    </div>
+    <div class="field">
+      <label>Wood (extra care)</label>
+      <input type="number" inputmode="numeric" id="fence_wood" placeholder="55">
+    </div>
+  </div>
+</div>
+
+<!-- ROOF -->
+<div class="section">
+  <div class="section-header">Roof Soft Wash</div>
+  <div class="field-row">
+    <div class="field">
+      <label>Base rate (per sq ft)</label>
+      <input type="number" inputmode="decimal" step="0.01" id="roof_rate" placeholder="0.25">
+    </div>
+    <div class="field">
+      <label>Minimum job</label>
+      <input type="number" inputmode="numeric" id="roof_min" placeholder="225">
+    </div>
+  </div>
+  <div class="field-row">
+    <div class="field">
+      <label>Steep pitch upcharge</label>
+      <input type="number" inputmode="numeric" id="roof_steep" placeholder="100">
+    </div>
+    <div class="field">
+      <label>Algae treatment</label>
+      <input type="number" inputmode="numeric" id="roof_algae" placeholder="85">
+    </div>
+  </div>
+</div>
+
+<!-- GUTTERS -->
+<div class="section">
+  <div class="section-header">Gutters</div>
+  <div class="field-row">
+    <div class="field">
+      <label>Base rate (per lin ft)</label>
+      <input type="number" inputmode="decimal" step="0.25" id="gutter_rate" placeholder="2.50">
+    </div>
+    <div class="field">
+      <label>Minimum job</label>
+      <input type="number" inputmode="numeric" id="gutter_min" placeholder="90">
+    </div>
+  </div>
+  <div class="field-row">
+    <div class="field">
+      <label>Flush downspouts</label>
+      <input type="number" inputmode="numeric" id="gutter_flush" placeholder="45">
+    </div>
+    <div class="field">
+      <label>Fascia cleaning</label>
+      <input type="number" inputmode="numeric" id="gutter_fascia" placeholder="55">
+    </div>
+  </div>
+</div>
+
+<!-- FLEET -->
+<div class="section">
+  <div class="section-header">Fleet / Trucks</div>
+  <div class="field-row">
+    <div class="field">
+      <label>Base rate (per truck)</label>
+      <input type="number" inputmode="numeric" id="fleet_rate" placeholder="130">
+    </div>
+    <div class="field">
+      <label>Minimum job</label>
+      <input type="number" inputmode="numeric" id="fleet_min" placeholder="90">
+    </div>
+  </div>
+  <div class="field-row">
+    <div class="field">
+      <label>Engine bay</label>
+      <input type="number" inputmode="numeric" id="fleet_engine" placeholder="75">
+    </div>
+    <div class="field">
+      <label>Wheel & tire detail</label>
+      <input type="number" inputmode="numeric" id="fleet_wheels" placeholder="35">
+    </div>
+  </div>
+  <div class="field-row">
+    <div class="field">
+      <label>Cab interior rinse</label>
+      <input type="number" inputmode="numeric" id="fleet_interior" placeholder="45">
+    </div>
+    <div class="field">
+      <label>On-site service fee</label>
+      <input type="number" inputmode="numeric" id="fleet_onsite" placeholder="90">
+    </div>
+  </div>
+</div>
+
+<!-- AG EQUIPMENT -->
+<div class="section">
+  <div class="section-header">Ag / Heavy Equipment</div>
+  <div class="field">
+    <label>How do you price this? (per piece / hourly / flat)</label>
+    <input type="text" id="ag_pricetype" placeholder="e.g. per piece, or hourly">
+  </div>
+  <div class="field-row">
+    <div class="field">
+      <label>Base rate</label>
+      <input type="number" inputmode="numeric" id="ag_rate" placeholder="">
+    </div>
+    <div class="field">
+      <label>Minimum job</label>
+      <input type="number" inputmode="numeric" id="ag_min" placeholder="">
+    </div>
+  </div>
+  <div class="field-row">
+    <div class="field">
+      <label>Undercarriage</label>
+      <input type="number" inputmode="numeric" id="ag_under" placeholder="">
+    </div>
+    <div class="field">
+      <label>Tracks/tires</label>
+      <input type="number" inputmode="numeric" id="ag_tracks" placeholder="">
+    </div>
+  </div>
+  <div class="field-row">
+    <div class="field">
+      <label>Engine bay</label>
+      <input type="number" inputmode="numeric" id="ag_engine" placeholder="">
+    </div>
+    <div class="field">
+      <label>On-site service fee</label>
+      <input type="number" inputmode="numeric" id="ag_onsite" placeholder="">
+    </div>
+  </div>
+</div>
+
+<!-- BARNS -->
+<div class="section">
+  <div class="section-header">Barns</div>
+  <div class="field">
+    <label>How do you price this? (per sq ft / flat rate)</label>
+    <input type="text" id="barn_pricetype" placeholder="e.g. per sq ft, or flat rate">
+  </div>
+  <div class="field-row">
+    <div class="field">
+      <label>Base rate</label>
+      <input type="number" inputmode="numeric" id="barn_rate" placeholder="">
+    </div>
+    <div class="field">
+      <label>Minimum job</label>
+      <input type="number" inputmode="numeric" id="barn_min" placeholder="">
+    </div>
+  </div>
+  <div class="field-row">
+    <div class="field">
+      <label>Roof wash add-on</label>
+      <input type="number" inputmode="numeric" id="barn_roof" placeholder="">
+    </div>
+    <div class="field">
+      <label>Interior/stalls</label>
+      <input type="number" inputmode="numeric" id="barn_interior" placeholder="">
+    </div>
+  </div>
+  <div class="field-row">
+    <div class="field">
+      <label>Concrete floor</label>
+      <input type="number" inputmode="numeric" id="barn_floor" placeholder="">
+    </div>
+    <div class="field">
+      <label>Livestock area (bio)</label>
+      <input type="number" inputmode="numeric" id="barn_livestock" placeholder="">
+    </div>
+  </div>
+</div>
+
+<!-- TRAVEL -->
+<div class="section">
+  <div class="section-header">Travel Fees</div>
+  <div class="field">
+    <label>What do you consider "local" (no charge)?</label>
+    <input type="text" id="travel_local" placeholder="e.g. within 20 miles">
+  </div>
+  <div class="field-row">
+    <div class="field">
+      <label>Mid-distance fee</label>
+      <input type="number" inputmode="numeric" id="travel_mid" placeholder="25">
+      <div class="hint">e.g. 20–40 miles</div>
+    </div>
+    <div class="field">
+      <label>Far fee</label>
+      <input type="number" inputmode="numeric" id="travel_far" placeholder="50">
+      <div class="hint">e.g. 40–60 miles</div>
+    </div>
+  </div>
+  <div class="field">
+    <label>Furthest fee (60+ miles)</label>
+    <input type="number" inputmode="numeric" id="travel_furthest" placeholder="75">
+  </div>
+</div>
+
+<!-- NOTES -->
+<div class="section">
+  <div class="section-header">Anything Else?</div>
+  <div class="field">
+    <label>Notes, corrections, services I missed</label>
+    <textarea id="notes" placeholder="e.g. I price barns differently, or I don't do X..."></textarea>
+  </div>
+</div>
+
+<div class="bottom-bar">
+  <button class="btn" onclick="sendToKelsey()">Text to Kelsey</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const FIELDS = [
+  { label: "HOUSE WASH", items: [
+    { id: "house_rate", label: "Base rate (per sq ft)" },
+    { id: "house_min", label: "Minimum job" },
+    { id: "house_2story", label: "2-story upcharge" },
+    { id: "house_mold", label: "Heavy mold/algae" },
+    { id: "house_windows", label: "Window cleaning" },
+    { id: "house_gutters", label: "Gutter flush add-on" },
+  ]},
+  { label: "DRIVEWAY / CONCRETE", items: [
+    { id: "drive_rate", label: "Base rate (per sq ft)" },
+    { id: "drive_min", label: "Minimum job" },
+    { id: "drive_oil", label: "Oil stain treatment" },
+    { id: "drive_sidewalk", label: "Sidewalk add-on" },
+  ]},
+  { label: "DECK / PATIO", items: [
+    { id: "deck_rate", label: "Base rate (per sq ft)" },
+    { id: "deck_min", label: "Minimum job" },
+    { id: "deck_steps", label: "Steps/stairs" },
+    { id: "deck_stain", label: "Stain/seal prep" },
+  ]},
+  { label: "FENCE", items: [
+    { id: "fence_rate", label: "Base rate (per lin ft)" },
+    { id: "fence_min", label: "Minimum job" },
+    { id: "fence_both", label: "Both sides upcharge" },
+    { id: "fence_wood", label: "Wood (extra care)" },
+  ]},
+  { label: "ROOF SOFT WASH", items: [
+    { id: "roof_rate", label: "Base rate (per sq ft)" },
+    { id: "roof_min", label: "Minimum job" },
+    { id: "roof_steep", label: "Steep pitch upcharge" },
+    { id: "roof_algae", label: "Algae treatment" },
+  ]},
+  { label: "GUTTERS", items: [
+    { id: "gutter_rate", label: "Base rate (per lin ft)" },
+    { id: "gutter_min", label: "Minimum job" },
+    { id: "gutter_flush", label: "Flush downspouts" },
+    { id: "gutter_fascia", label: "Fascia cleaning" },
+  ]},
+  { label: "FLEET / TRUCKS", items: [
+    { id: "fleet_rate", label: "Base rate (per truck)" },
+    { id: "fleet_min", label: "Minimum job" },
+    { id: "fleet_engine", label: "Engine bay" },
+    { id: "fleet_wheels", label: "Wheel & tire detail" },
+    { id: "fleet_interior", label: "Cab interior rinse" },
+    { id: "fleet_onsite", label: "On-site service fee" },
+  ]},
+  { label: "AG / HEAVY EQUIPMENT", items: [
+    { id: "ag_pricetype", label: "Pricing method" },
+    { id: "ag_rate", label: "Base rate" },
+    { id: "ag_min", label: "Minimum job" },
+    { id: "ag_under", label: "Undercarriage" },
+    { id: "ag_tracks", label: "Tracks/tires" },
+    { id: "ag_engine", label: "Engine bay" },
+    { id: "ag_onsite", label: "On-site service fee" },
+  ]},
+  { label: "BARNS", items: [
+    { id: "barn_pricetype", label: "Pricing method" },
+    { id: "barn_rate", label: "Base rate" },
+    { id: "barn_min", label: "Minimum job" },
+    { id: "barn_roof", label: "Roof wash add-on" },
+    { id: "barn_interior", label: "Interior/stalls" },
+    { id: "barn_floor", label: "Concrete floor" },
+    { id: "barn_livestock", label: "Livestock area (bio)" },
+  ]},
+  { label: "TRAVEL FEES", items: [
+    { id: "travel_local", label: "Local definition" },
+    { id: "travel_mid", label: "Mid-distance fee" },
+    { id: "travel_far", label: "Far fee" },
+    { id: "travel_furthest", label: "Furthest fee (60+ mi)" },
+  ]},
+];
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function sendToKelsey() {
+  let msg = "Hey Kelsey, here's my pricing:\n\n";
+  let hasAny = false;
+
+  FIELDS.forEach(section => {
+    const filled = section.items.filter(f => {
+      const v = document.getElementById(f.id)?.value.trim();
+      return v && v !== '';
+    });
+    if (filled.length === 0) return;
+    msg += `${section.label}\n`;
+    filled.forEach(f => {
+      const v = document.getElementById(f.id).value.trim();
+      const isNum = !isNaN(v) && v !== '';
+      msg += `  ${f.label}: ${isNum ? '$' : ''}${v}\n`;
+      hasAny = true;
+    });
+    msg += '\n';
+  });
+
+  const notes = document.getElementById('notes').value.trim();
+  if (notes) msg += `NOTES: ${notes}\n`;
+
+  if (!hasAny) {
+    showToast('Fill in at least a few prices first!');
+    return;
+  }
+
+  const encoded = encodeURIComponent(msg);
+  window.location.href = `sms:+12603884584&body=${encoded}`;
+}
+</script>
+</body>
+</html>
