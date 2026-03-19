@@ -400,7 +400,7 @@
     <button class="btn" onclick="saveProgress()" style="background:var(--surface2); color:var(--text); border:1px solid var(--border);">Save progress</button>
     <button class="btn" onclick="clearSaved()" style="background:transparent; color:var(--muted); border:1px solid var(--border); font-size:13px;">Clear</button>
   </div>
-  <button class="btn" onclick="sendToKelsey()">Text to Kelsey</button>
+  <button class="btn" onclick="sendToKelsey()">Send to Kelsey</button>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -550,7 +550,19 @@ function sendToKelsey() {
   }
 
   const encoded = encodeURIComponent(msg);
-  window.location.href = `sms:+12603884584&body=${encoded}`;
+  // Try SMS first, fall back to clipboard
+  if (navigator.share) {
+    navigator.share({ text: msg }).catch(() => {
+      navigator.clipboard.writeText(msg).then(() => showToast('Copied! Paste into a text to Kelsey'));
+    });
+  } else {
+    navigator.clipboard.writeText(msg).then(() => {
+      showToast('Copied! Paste into a text to Kelsey');
+    }).catch(() => {
+      // Last resort — prompt
+      prompt('Copy this and text it to Kelsey:', msg);
+    });
+  }
 }
 </script>
 </body>
