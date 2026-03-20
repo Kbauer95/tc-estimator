@@ -234,7 +234,27 @@
       </div>
     </div>
 
+    <div id="bundleRow" style="display:none; margin-bottom: 14px;">
+      <div class="addon-row" id="bundleToggle" onclick="toggleBundle()" style="border-color: var(--border);">
+        <div class="addon-left">
+          <div class="addon-check" id="bundleCheck"></div>
+          <div>
+            <div class="addon-name">Bundle discount</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Apply 10% off for multiple services</div>
+          </div>
+        </div>
+        <div class="addon-price" id="bundleSavings"></div>
+      </div>
+    </div>
+
     <div class="breakdown-panel visible" id="summaryPanel" style="margin-top:8px;"></div>
+
+    <div style="margin-top: 14px;">
+      <div class="field">
+        <label style="font-size: 12px; color: var(--text-muted);">Job notes (optional — included in estimate)</label>
+        <textarea id="jobNotes" placeholder="e.g. Back patio only, quote includes detached garage..." style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px 14px; color:var(--text); font-size:15px; font-family:inherit; outline:none; resize:vertical; min-height:80px; margin-top:6px;"></textarea>
+      </div>
+    </div>
 
     <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 10px;">
       <button class="btn btn-primary" onclick="shareViaSMS()" style="padding:16px;">📱 Text estimate to customer</button>
@@ -498,11 +518,32 @@ function prevService() {
   loadServiceConfig(selectedIds[configIndex]);
 }
 
+let bundleEnabled = false;
+
+function toggleBundle() {
+  bundleEnabled = !bundleEnabled;
+  const check = document.getElementById('bundleCheck');
+  const toggle = document.getElementById('bundleToggle');
+  if (bundleEnabled) { check.style.background = 'var(--cyan)'; check.style.borderColor = 'var(--cyan)'; toggle.style.borderColor = 'var(--cyan)'; }
+  else { check.style.background = ''; check.style.borderColor = ''; toggle.style.borderColor = 'var(--border)'; }
+  buildSummary();
+}
+
 function buildSummary() {
   const travel = globalTravel;
   const states = selectedIds.map(id => serviceStates[id]).filter(Boolean);
   const servicesTotal = states.reduce((sum, st) => sum + (st.total || 0), 0);
-  const grandTotal = servicesTotal + travel;
+  const discount = bundleEnabled ? Math.round(servicesTotal * 0.10) : 0;
+  const grandTotal = servicesTotal - discount + travel;
+
+  // Show bundle toggle only if 2+ services
+  const bundleRow = document.getElementById('bundleRow');
+  bundleRow.style.display = states.length >= 2 ? 'block' : 'none';
+  if (states.length < 2) bundleEnabled = false;
+
+  // Update savings label
+  const savings = document.getElementById('bundleSavings');
+  if (savings) savings.textContent = discount > 0 ? `-$${discount}` : states.length >= 2 ? `save $${Math.round(servicesTotal * 0.10)}` : '';
 
   const n = states.length;
   document.getElementById('summaryMeta').textContent =
@@ -521,6 +562,7 @@ function buildSummary() {
   });
 
   if (travel > 0) html += `<div class="bk-row"><span class="bk-label">Travel fee</span><span class="bk-val">+$${travel}</span></div>`;
+  if (discount > 0) html += `<div class="bk-row"><span class="bk-label">Bundle discount (10%)</span><span class="bk-val" style="color:var(--cyan)">-$${discount}</span></div>`;
   html += `<div class="bk-row"><span>Total estimate</span><span>$${grandTotal.toLocaleString()}</span></div>`;
   document.getElementById('summaryPanel').innerHTML = html;
 }
@@ -538,8 +580,11 @@ function goStep(n) {
 }
 
 function resetAll() {
-  selectedIds = []; serviceStates = {}; configIndex = 0; globalTravel = 0;
+  selectedIds = []; serviceStates = {}; configIndex = 0; globalTravel = 0; bundleEnabled = false;
   document.querySelectorAll('.svc-card').forEach(c => c.classList.remove('active'));
+  const notes = document.getElementById('jobNotes'); if (notes) notes.value = '';
+  const custName = document.getElementById('custName'); if (custName) custName.value = '';
+  const custPhone = document.getElementById('custPhone'); if (custPhone) custPhone.value = '';
   goStep(0);
 }
 
@@ -551,10 +596,13 @@ function showToast(msg) {
 
 function getTextEstimate() {
   const name = document.getElementById('custName')?.value.trim();
+  const notes = document.getElementById('jobNotes')?.value.trim();
   const greeting = name ? `Hi ${name},\n\n` : '';
   const travel = globalTravel;
   const states = selectedIds.map(id => serviceStates[id]).filter(Boolean);
-  const grandTotal = states.reduce((sum, st) => sum + (st.total || 0), 0) + travel;
+  const servicesTotal = states.reduce((sum, st) => sum + (st.total || 0), 0);
+  const discount = bundleEnabled ? Math.round(servicesTotal * 0.10) : 0;
+  const grandTotal = servicesTotal - discount + travel;
 
   let txt = `${greeting}Here's your estimate from Triple Clean Pressure Washing:\n\n`;
   states.forEach(st => {
@@ -564,7 +612,9 @@ function getTextEstimate() {
     txt += `  Subtotal: $${st.total.toLocaleString()}\n\n`;
   });
   if (travel > 0) txt += `Travel fee: +$${travel}\n`;
+  if (discount > 0) txt += `Bundle discount (10%): -$${discount}\n`;
   txt += `TOTAL ESTIMATE: $${grandTotal.toLocaleString()}\n`;
+  if (notes) txt += `\nNotes: ${notes}\n`;
   txt += `\nFinal price confirmed on-site.\n`;
   txt += `\nQuestions? Call or text: 260-341-7975`;
   return txt;
