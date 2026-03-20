@@ -229,10 +229,9 @@
         <div class="field">
           <label>Travel</label>
           <select id="travel" onchange="calcPrice()">
-            <option value="0">Local</option>
-            <option value="25">25–40 mi  +$25</option>
-            <option value="50">40–60 mi  +$50</option>
-            <option value="75">60+ mi  +$75</option>
+            <option value="0">Local (within 20 mi)</option>
+            <option value="25">20–40 mi  +$25</option>
+            <option value="50">40+ mi  +$50</option>
           </select>
         </div>
       </div>
@@ -301,33 +300,39 @@
 
 <script>
 const SERVICES = [
-  { id:'house', icon:'🏠', name:'House wash', unit:'sq ft', baseRate:[0.15,0.25], min:175,
+  { id:'house', icon:'🏠', name:'House wash', unit:'sq ft', baseRate:0.20, min:200,
     dims:[{id:'sqft',label:'Approx sq ft (all sides)',default:2000,min:500,max:12000,step:50}],
     addons:[{id:'story2',label:'2-story home',price:100},{id:'mold',label:'Heavy mold/algae',price:75},{id:'windows',label:'Window cleaning',price:100},{id:'gutters',label:'Add gutter flush',price:75}] },
-  { id:'driveway', icon:'🚗', name:'Driveway', unit:'sq ft', baseRate:[0.12,0.25], min:100,
+  { id:'driveway', icon:'🚗', name:'Driveway', unit:'sq ft', baseRate:0.18, min:100,
     dims:[{id:'length',label:'Length (ft)',default:40,min:10,max:200},{id:'width',label:'Width (ft)',default:20,min:5,max:80}],
     addons:[{id:'sealer',label:'Sealant application',price:135},{id:'oil',label:'Oil stain treatment',price:75},{id:'sidewalk',label:'Add sidewalk',price:60}] },
-  { id:'deck', icon:'🪵', name:'Deck / patio', unit:'sq ft', baseRate:[0.25,0.45], min:125,
+  { id:'deck', icon:'🪵', name:'Deck / patio', unit:'sq ft', baseRate:0.35, min:125,
     dims:[{id:'length',label:'Length (ft)',default:20,min:5,max:100},{id:'width',label:'Width (ft)',default:15,min:5,max:80}],
     addons:[{id:'stain',label:'Stain/seal prep',price:85},{id:'steps',label:'Steps/stairs',price:55},{id:'railings',label:'Railing detail',price:75}] },
-  { id:'fence', icon:'🪧', name:'Fence', unit:'linear ft', baseRate:[1.25,2.75], min:100,
+  { id:'fence', icon:'🪧', name:'Fence', unit:'linear ft', baseRate:2.00, min:100,
     dims:[{id:'linft',label:'Linear feet',default:100,min:20,max:1000,step:10}],
     addons:[{id:'both',label:'Both sides',price:90},{id:'wood',label:'Wood (extra care)',price:55}] },
-  { id:'roof', icon:'🏗', name:'Roof soft wash', unit:'sq ft', baseRate:[0.18,0.35], min:225,
+  { id:'roof', icon:'🏗', name:'Roof soft wash', unit:'sq ft', baseRate:0.25, min:225,
     dims:[{id:'sqft',label:'Roof sq ft (approx)',default:1800,min:500,max:8000,step:50}],
     addons:[{id:'steep',label:'Steep pitch',price:100},{id:'treat',label:'Algae treatment',price:85}] },
-  { id:'gutters', icon:'🌊', name:'Gutters', unit:'linear ft', baseRate:[1.75,3.25], min:90,
+  { id:'gutters', icon:'🌊', name:'Gutters', unit:'linear ft', baseRate:2.50, min:90,
     dims:[{id:'linft',label:'Linear feet of gutter',default:120,min:20,max:600,step:10}],
     addons:[{id:'flush',label:'Flush downspouts',price:45},{id:'fascia',label:'Fascia cleaning',price:55}] },
-  { id:'commercial', icon:'🏢', name:'Commercial', unit:'sq ft', baseRate:[0.08,0.15], min:225,
+  { id:'commercial', icon:'🏢', name:'Commercial', unit:'sq ft', baseRate:0.12, min:225,
     dims:[{id:'length',label:'Length (ft)',default:100,min:20,max:500},{id:'width',label:'Width (ft)',default:60,min:10,max:300}],
     addons:[{id:'night',label:'After-hours',price:135}] },
-  { id:'fleet', icon:'🚛', name:'Fleet trucks', unit:'truck', baseRate:[90,175], min:90,
+  { id:'fleet', icon:'🚛', name:'Fleet trucks', unit:'truck', baseRate:130, min:90,
     dims:[{id:'linft',label:'Number of trucks',default:3,min:1,max:50,step:1}],
     addons:[{id:'engine',label:'Engine bay cleaning',price:75},{id:'wheels',label:'Wheel & tire detail',price:35},{id:'interior',label:'Cab interior rinse',price:45},{id:'onsite',label:'On-site service',price:90}] },
-  { id:'concrete', icon:'🛤', name:'Concrete / pads', unit:'sq ft', baseRate:[0.10,0.20], min:90,
+  { id:'concrete', icon:'🛤', name:'Concrete / pads', unit:'sq ft', baseRate:0.15, min:90,
     dims:[{id:'length',label:'Length (ft)',default:30,min:5,max:300},{id:'width',label:'Width (ft)',default:20,min:5,max:100}],
-    addons:[{id:'sealer',label:'Sealant',price:85},{id:'stain',label:'Stain removal',price:50}] }
+    addons:[{id:'sealer',label:'Sealant',price:85},{id:'stain',label:'Stain removal',price:50}] },
+  { id:'ag', icon:'🚜', name:'Ag / Heavy equipment', unit:'hour', baseRate:125, min:125,
+    dims:[{id:'linft',label:'Number of hours (est.)',default:2,min:1,max:20,step:1}],
+    addons:[{id:'under',label:'Undercarriage',price:75},{id:'tracks',label:'Tracks / tires',price:60},{id:'engine',label:'Engine bay',price:75},{id:'onsite',label:'On-site service fee',price:90}] },
+  { id:'barn', icon:'🏚', name:'Barns', unit:'hour', baseRate:115, min:115,
+    dims:[{id:'linft',label:'Number of hours (est.)',default:2,min:1,max:20,step:1}],
+    addons:[{id:'roof',label:'Roof wash',price:150},{id:'interior',label:'Interior / stalls',price:100},{id:'floor',label:'Concrete floor',price:85},{id:'livestock',label:'Livestock area (bio)',price:125}] }
 ];
 
 let selected = null;
@@ -361,7 +366,7 @@ function selectService(id) {
 function buildConfig() {
   const s = selected;
   document.getElementById('configHeading').innerHTML = `${s.icon} ${s.name} <span class="svc-badge">${s.unit}</span>`;
-  document.getElementById('configSub').textContent = `$${s.baseRate[0]}–$${s.baseRate[1]} per ${s.unit} · min $${s.min}`;
+  document.getElementById('configSub').textContent = `$${s.baseRate} per ${s.unit} · min $${s.min}`;
 
   // Dims
   const dimContainer = document.getElementById('dimFields');
@@ -428,8 +433,7 @@ function calcPrice() {
   const cond = parseFloat(document.getElementById('condition')?.value || 1);
   const travel = parseFloat(document.getElementById('travel')?.value || 0);
 
-  let baseMin = Math.max(sqft * s.baseRate[0] * cond, s.min);
-  let baseMax = Math.max(sqft * s.baseRate[1] * cond, s.min * 1.15);
+  let base = Math.max(sqft * s.baseRate * cond, s.min);
 
   let addTotal = 0, addLines = [];
   s.addons.forEach(a => {
@@ -439,26 +443,25 @@ function calcPrice() {
     }
   });
 
-  const tMin = Math.round(baseMin + addTotal + travel);
-  const tMax = Math.round(baseMax + addTotal + travel);
+  const total = Math.round(base + addTotal + travel);
 
-  document.getElementById('quotePriceDisplay').textContent = `$${tMin.toLocaleString()} – $${tMax.toLocaleString()}`;
+  document.getElementById('quotePriceDisplay').textContent = `$${total.toLocaleString()}`;
   document.getElementById('quoteDetail').textContent = `~${sqft.toLocaleString()} ${s.unit}`;
   document.getElementById('quoteBar').style.display = 'block';
 
   const condLabel = cond == 1 ? '' : cond == 1.2 ? ' (moderate)' : ' (heavy)';
   let html = `
     <div class="breakdown-title">Estimate breakdown</div>
-    <div class="bk-row"><span class="bk-label">Base — ${sqft.toLocaleString()} ${s.unit}${condLabel}</span><span class="bk-val">$${Math.round(baseMin).toLocaleString()}–$${Math.round(baseMax).toLocaleString()}</span></div>
+    <div class="bk-row"><span class="bk-label">Base — ${sqft.toLocaleString()} ${s.unit}${condLabel}</span><span class="bk-val">$${Math.round(base).toLocaleString()}</span></div>
   `;
   addLines.forEach(l => {
     html += `<div class="bk-row"><span class="bk-label">+ ${l.name}</span><span class="bk-val">+$${l.price}</span></div>`;
   });
   if (travel > 0) html += `<div class="bk-row"><span class="bk-label">Travel fee</span><span class="bk-val">+$${travel}</span></div>`;
-  html += `<div class="bk-row"><span>Total</span><span>$${tMin.toLocaleString()} – $${tMax.toLocaleString()}</span></div>`;
+  html += `<div class="bk-row"><span>Total</span><span>$${total.toLocaleString()}</span></div>`;
   document.getElementById('breakdownPanel').innerHTML = html;
 
-  lastEstimate = { service: s.name, sqft, unit: s.unit, tMin, tMax, baseMin, baseMax, addLines, travel, cond };
+  lastEstimate = { service: s.name, sqft, unit: s.unit, total, base, addLines, travel, cond };
 }
 
 function buildSummary() {
@@ -471,13 +474,13 @@ function buildSummary() {
     <div class="breakdown-title">/// Triple Clean Pressure Washing</div>
     <div class="bk-row"><span class="bk-label">Service</span><span class="bk-val">${e.service}</span></div>
     <div class="bk-row"><span class="bk-label">Area${condLabel}</span><span class="bk-val">~${e.sqft.toLocaleString()} ${e.unit}</span></div>
-    <div class="bk-row"><span class="bk-label">Base</span><span class="bk-val">$${Math.round(e.baseMin).toLocaleString()}–$${Math.round(e.baseMax).toLocaleString()}</span></div>
+    <div class="bk-row"><span class="bk-label">Base</span><span class="bk-val">$${Math.round(e.base).toLocaleString()}</span></div>
   `;
   e.addLines.forEach(l => {
     html += `<div class="bk-row"><span class="bk-label">+ ${l.name}</span><span class="bk-val">+$${l.price}</span></div>`;
   });
   if (e.travel > 0) html += `<div class="bk-row"><span class="bk-label">Travel</span><span class="bk-val">+$${e.travel}</span></div>`;
-  html += `<div class="bk-row"><span>Estimate</span><span>$${e.tMin.toLocaleString()} – $${e.tMax.toLocaleString()}</span></div>`;
+  html += `<div class="bk-row"><span>Estimate</span><span>$${e.total.toLocaleString()}</span></div>`;
   document.getElementById('summaryPanel').innerHTML = html;
 }
 
@@ -518,9 +521,9 @@ function getTextEstimate() {
   txt += `Service: ${e.service}\n`;
   txt += `Area: ~${e.sqft.toLocaleString()} ${e.unit}\n`;
   if (e.addLines.length) txt += `Add-ons: ${e.addLines.map(l => l.name).join(', ')}\n`;
-  txt += `\nESTIMATE: $${e.tMin.toLocaleString()} – $${e.tMax.toLocaleString()}\n`;
+  txt += `\nESTIMATE: $${e.total.toLocaleString()}\n`;
   txt += `\nThis is a ballpark estimate — final price confirmed on-site.\n`;
-  txt += `\nQuestions? Call or text us: 260-341-7975`;
+  txt += `\nQuestions? Call or text us: 260-388-4584`;
   return txt;
 }
 
