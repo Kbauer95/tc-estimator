@@ -545,15 +545,14 @@ function shareViaSMS() {
 
 buildGrid();
 
-// PWA service worker
+// Always fetch fresh — unregister any old service workers and clear caches
 if ('serviceWorker' in navigator) {
-  const sw = `
-    const CACHE = 'tc-v1';
-    self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(['/']))));
-    self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));
-  `;
-  const blob = new Blob([sw], {type:'application/javascript'});
-  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
+  navigator.serviceWorker.getRegistrations().then(regs => {
+    regs.forEach(reg => reg.unregister());
+  });
+  caches.keys().then(keys => {
+    keys.forEach(key => caches.delete(key));
+  });
 }
 </script>
 </body>
